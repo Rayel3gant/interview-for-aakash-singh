@@ -60,7 +60,6 @@ export async function GET(
 ) {
   try {
     const { id } = params;
-    console.log(process.env.ALL_LAUNCHES_URL!+id)
     const res = await fetch(process.env.ALL_LAUNCHES_URL!+id);
     const data = await res.json();
 
