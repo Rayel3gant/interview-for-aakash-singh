@@ -1,5 +1,5 @@
 'use server';
-import { Launch } from '@/lib/types';
+import {  LaunchDetails } from '@/lib/types';
 import { NextResponse } from 'next/server';
 
 const getLaunchPadData = async (id: string): Promise<string> => {
@@ -44,7 +44,7 @@ export async function GET() {
 
     // Fetch and enrich all launch data in parallel
     const enrichedData = await Promise.all(
-      launches.map(async (launch: Launch) => {
+      launches.map(async (launch: LaunchDetails) => {
         const [location, rocketName, orbit] = await Promise.all([
           getLaunchPadData(launch.launchpad!),
           getRocketData(launch.rocket),

@@ -145,7 +145,7 @@ const DateModal = ({
             <div className="mt-4 text-right">
                 <button
                 onClick={filterLaunchData}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                className="text-blue-600 cursor-pointer rounded-md hover:text-blue-700"
                 >
                 Apply Filter
                 </button>

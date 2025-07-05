@@ -35,6 +35,7 @@ import { Launch, singleLaunch } from '@/lib/types';
 import LaunchModal from '@/components/LaunchModal';
 import { formatLaunchDate } from '@/lib/utils';
 import DateModal from '@/components/DateModal';
+import Loader from '@/components/Loader';
 
 const Page = () => {
   const dispatch = useDispatch();
@@ -48,6 +49,7 @@ const Page = () => {
   const [openModal,setOpenModal]=useState(false);
   const [singleLaunch,setSingleLaunch]=useState<singleLaunch | null>(null);
   const [openDateModal,setDateModal]=useState(false);
+  const [modalDataLoading,setModalDataLoading]=useState(false);
 
   // Fetch data if not in Redux
   async function fetchData() {
@@ -77,9 +79,13 @@ const Page = () => {
   }
 
   const openLaunchDetailsModal=(id:string)=>{
+    setModalDataLoading(true);
     fetchLaunchDetails(id);
     setTimeout(() => {
       setOpenModal(true)
+    }, 1000);
+    setTimeout(() => {
+      setModalDataLoading(false);
     }, 1500);
   }
 
@@ -153,10 +159,10 @@ const Page = () => {
   };
 
   return (
-    <div className='w-11/12 mx-auto'>
+    <div className='w-11/12 mx-auto min-h-screen '>
       <div className='w-full flex items-center justify-between my-12'>
-        <div className='' onClick={()=>setDateModal(true)}>
-          date filter
+        <div className='cursor-pointer px-4 py-2 rounded-md border' onClick={()=>setDateModal(true)}>
+          Date filter
         </div>
 
         <div>
@@ -169,7 +175,7 @@ const Page = () => {
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Theme" />
             </SelectTrigger>
-            <SelectContent defaultValue="all">
+            <SelectContent defaultValue="all" className='bg-white'>
               <SelectItem value="all">All Launches</SelectItem>
               <SelectItem value="upcoming">Upcoming Launches</SelectItem>
               <SelectItem value="successful">Successful Launches</SelectItem>
@@ -181,96 +187,114 @@ const Page = () => {
 
       <div className="overflow-x-auto w-full">
         <div className="w-full overflow-x-auto">
-        <Table className="table-fixed w-full border rounded-[6px] min-w-[800px]">
-          <TableHeader className="bg-[#F4F5F7] text-[#4B5563]">
-            <TableRow>
-              <TableHead className="w-[60px] text-center">No.</TableHead>
-              <TableHead className="min-w-[300px] max-w-fit text-center">Launched (UTC)</TableHead>
-              <TableHead className="min-w-[250px] max-w-fit text-center">Location</TableHead>
-              <TableHead className="min-w-[150px] text-center">Mission</TableHead>
-              <TableHead className="min-w-[120px] text-center">Orbit</TableHead>
-              <TableHead className="min-w-[160px] text-center">Launch Status</TableHead>
-              <TableHead className="min-w-[120px] text-center">Rocket</TableHead>
-            </TableRow>
-          </TableHeader>
+        {
+          loading && (
+          <div className='w-full min-h-[300px] flex justify-center items-center'>
+              <Loader/>
+          </div>
+          )
+        }
 
-          <TableBody className="text-[#1F2937] border-b-0">
-            {currentRows.map((launch: Launch, index: number) => (
-              <TableRow
-                onClick={() => openLaunchDetailsModal(launch.id)}
-                key={launch.id}
-                className="cursor-pointer hover:bg-gray-50"
-              >
-                <TableCell className='text-center border-0'>{indexOfFirstRow + index + 1}</TableCell>
-                <TableCell className='text-center border-0'>{formatLaunchDate(launch.static_fire_date_utc!)}</TableCell>
-                <TableCell className='text-center border-0'>{launch.location}</TableCell>
-                <TableCell className='text-center border-0'>{launch.name}</TableCell>
-                <TableCell className='text-center border-0'>{launch.orbit}</TableCell>
-                <TableCell className='flex justify-center items-center border-0'>
-                  {launch.upcoming && (
-                    <span className="bg-[#FEF3C7] text-[#92400F] rounded-[20px] px-3 py-1 inline-block">
-                      Upcoming
-                    </span>
-                  )}
-                  {launch.success === true && !launch.upcoming && (
-                    <span className="bg-[#DEF7EC] text-[#03543F] rounded-[20px] px-3 py-1 inline-block">
-                      Success
-                    </span>
-                  )}
-                  {launch.success === false && !launch.upcoming && (
-                    <span className="bg-[#FDE2E1] text-[#981B1C] rounded-[20px] px-3 py-1 inline-block">
-                      Failed
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell className='text-center border-0'>{launch.rocket}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+        {
+          (launchData.length===0)? (
+            <div className='w-full text-center text-[#374151] text-lg'>
+              No results found for the specified filter
+            </div>
+          ) : (
+            <>
+              <Table className="table-fixed w-full tableBorder rounded-md min-w-[800px]">
+                <TableHeader className="bg-[#F4F5F7] text-[#4B5563]">
+                  <TableRow>
+                    <TableHead className="w-[60px] text-center">No.</TableHead>
+                    <TableHead className="min-w-[300px] max-w-fit text-center">Launched (UTC)</TableHead>
+                    <TableHead className="min-w-[250px] max-w-fit text-center">Location</TableHead>
+                    <TableHead className="min-w-[150px] text-center">Mission</TableHead>
+                    <TableHead className="min-w-[120px] text-center">Orbit</TableHead>
+                    <TableHead className="min-w-[160px] text-center">Launch Status</TableHead>
+                    <TableHead className="min-w-[120px] text-center">Rocket</TableHead>
+                  </TableRow>
+                </TableHeader>
 
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <Pagination className="my-8">
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={() => goToPage(currentPage - 1)}
-                />
-              </PaginationItem>
-
-              {pageNumbers.map((item, idx) => (
-                <PaginationItem key={idx}>
-                  {item === 'ellipsis-start' || item === 'ellipsis-end' ? (
-                    <PaginationEllipsis />
-                  ) : (
-                    <PaginationLink
-                      href="#"
-                      isActive={item === currentPage}
-                      onClick={() => goToPage(Number(item))}
+                <TableBody className="text-[#1F2937] border-b-0">
+                  {currentRows.map((launch: Launch, index: number) => (
+                    <TableRow
+                      onClick={() => openLaunchDetailsModal(launch.id)}
+                      key={launch.id}
+                      className="cursor-pointer hover:bg-gray-50"
                     >
-                      {item}
-                    </PaginationLink>
-                  )}
-                </PaginationItem>
-              ))}
+                      <TableCell className='text-center border-0'>{indexOfFirstRow + index + 1}</TableCell>
+                      <TableCell className='text-center border-0'>{formatLaunchDate(launch.static_fire_date_utc!)}</TableCell>
+                      <TableCell className='text-center border-0'>{launch.location}</TableCell>
+                      <TableCell className='text-center border-0'>{launch.name}</TableCell>
+                      <TableCell className='text-center border-0'>{launch.orbit}</TableCell>
+                      <TableCell className='flex justify-center items-center border-0'>
+                        {launch.upcoming && (
+                          <span className="bg-[#FEF3C7] text-[#92400F] rounded-[20px] px-3 py-1 inline-block">
+                            Upcoming
+                          </span>
+                        )}
+                        {launch.success === true && !launch.upcoming && (
+                          <span className="bg-[#DEF7EC] text-[#03543F] rounded-[20px] px-3 py-1 inline-block">
+                            Success
+                          </span>
+                        )}
+                        {launch.success === false && !launch.upcoming && (
+                          <span className="bg-[#FDE2E1] text-[#981B1C] rounded-[20px] px-3 py-1 inline-block">
+                            Failed
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className='text-center border-0'>{launch.rocket}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
 
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={() => goToPage(currentPage + 1)}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <Pagination className="my-8 w-full flex justify-end ">
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={() => goToPage(currentPage - 1)}
+                      />
+                    </PaginationItem>
+
+                    {pageNumbers.map((item, idx) => (
+                      <PaginationItem key={idx}>
+                        {item === 'ellipsis-start' || item === 'ellipsis-end' ? (
+                          <PaginationEllipsis />
+                        ) : (
+                          <PaginationLink
+                            href="#"
+                            isActive={item === currentPage}
+                            onClick={() => goToPage(Number(item))}
+                          >
+                            {item}
+                          </PaginationLink>
+                        )}
+                      </PaginationItem>
+                    ))}
+
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={() => goToPage(currentPage + 1)}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
+            </>
+          )
+        }
+
+      </div>       
       </div>
 
       {
-        openModal && singleLaunch && <LaunchModal setOpenModal={setOpenModal} data={singleLaunch} openModal={openModal} />
+        openModal && singleLaunch && <LaunchModal setOpenModal={setOpenModal} data={singleLaunch} openModal={openModal} modalDataLoading={modalDataLoading}   />
       }
 
       {

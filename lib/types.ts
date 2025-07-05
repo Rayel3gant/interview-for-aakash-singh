@@ -102,4 +102,6 @@ export interface singleLaunch {
   payloadType: string;
   orbit: string;
   launchSite: string;
+  wikipedia:string;
+  upcoming: boolean | null;
 }

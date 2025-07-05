@@ -6,35 +6,51 @@ const getLaunchPadData = async (id: string): Promise<string> => {
   try {
     const res = await fetch(`https://api.spacexdata.com/v4/launchpads/${id}`);
     const data = await res.json();
-    return data.locality || 'Unknown';
+    return data.locality || "Unknown";
   } catch (error) {
-    console.error('Launchpad error:', error);
-    return 'NA';
+    console.error("Launchpad error:", error);
+    return "NA";
   }
 };
 
-const getRocketData = async (id: string): Promise<string> => {
+const getRocketData = async (
+  id: string
+): Promise<{ name: string; type: string; country: string; company: string }> => {
   try {
     const res = await fetch(`https://api.spacexdata.com/v4/rockets/${id}`);
     const data = await res.json();
-    return data.name || 'Unknown';
+    return {
+      name: data.name || "Unknown",
+      type: data.type || "Unknown",
+      country: data.country || "Unknown",
+      company: data.company || "Unknown",
+    };
   } catch (error) {
-    console.error('Rocket error:', error);
-    return 'NA';
+    console.error("Rocket error:", error);
+    return {
+      name: "NA",
+      type: "NA",
+      country: "NA",
+      company: "NA",
+    };
   }
 };
 
-const getOrbitAndTypeData = async (id: string): Promise<{ orbit: string; type: string }> => {
+const getOrbitAndTypeData = async (
+  id: string | undefined
+): Promise<{ orbit: string; type: string }> => {
+  if (!id) return { orbit: "NA", type: "NA" };
+
   try {
     const res = await fetch(`https://api.spacexdata.com/v4/payloads/${id}`);
     const data = await res.json();
     return {
-      orbit: data.orbit || 'Unknown',
-      type: data.type || 'Unknown',
+      orbit: data.orbit || "Unknown",
+      type: data.type || "Unknown",
     };
   } catch (error) {
-    console.error('Payload error:', error);
-    return { orbit: 'NA', type: 'NA' };
+    console.error("Payload error:", error);
+    return { orbit: "NA", type: "NA" };
   }
 };
 
@@ -45,40 +61,39 @@ export async function GET(
   try {
     const { id } = params;
 
-    // Fetch main launch data
     const res = await fetch(`https://api.spacexdata.com/v4/launches/${id}`);
     const data = await res.json();
 
-    // Get first payload ID safely
     const payloadId = data.payloads?.[0];
 
-    // Run dependent fetches in parallel
-    const [rocketName, launchSite, payloadInfo] = await Promise.all([
+    const [rocketInfo, launchSite, payloadInfo] = await Promise.all([
       getRocketData(data.rocket),
       getLaunchPadData(data.launchpad),
-      getOrbitAndTypeData(payloadId)
+      getOrbitAndTypeData(payloadId),
     ]);
 
     const responseData = {
       image: data.links?.patch?.small || "",
       name: data.name,
       success: data.success,
-      rocketType:"",
-      rocket: rocketName,
+      upcoming: data.upcoming,
+      rocket: rocketInfo.name,
+      rocketType: rocketInfo.type,
       details: data.details || "",
       flightNumber: data.flight_number,
-      manufacturer: "SpaceX",
-      nationality: "SpaceX",
+      manufacturer: rocketInfo.company,
+      nationality: rocketInfo.country,
       launchDate: formatLaunchDate(data.static_fire_date_utc),
       payloadType: payloadInfo.type,
       orbit: payloadInfo.orbit,
-      launchSite: launchSite
+      launchSite: launchSite,
+      wikipedia: data.links?.wikipedia || "",
     };
 
     return NextResponse.json(
       {
         message: "Launch fetched successfully",
-        data:responseData,
+        data: responseData,
       },
       { status: 200 }
     );
