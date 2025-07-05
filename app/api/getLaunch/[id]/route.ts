@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 const getLaunchPadData = async (id: string): Promise<string> => {
   try {
-    const res = await fetch(`https://api.spacexdata.com/v4/launchpads/${id}`);
+    const res = await fetch(process.env.LAUNCHPAD_URL! + id);
     const data = await res.json();
     return data.locality || "Unknown";
   } catch (error) {
@@ -17,7 +17,7 @@ const getRocketData = async (
   id: string
 ): Promise<{ name: string; type: string; country: string; company: string }> => {
   try {
-    const res = await fetch(`https://api.spacexdata.com/v4/rockets/${id}`);
+    const res = await fetch(process.env.ROCKET_URL! + id);
     const data = await res.json();
     return {
       name: data.name || "Unknown",
@@ -42,7 +42,7 @@ const getOrbitAndTypeData = async (
   if (!id) return { orbit: "NA", type: "NA" };
 
   try {
-    const res = await fetch(`https://api.spacexdata.com/v4/payloads/${id}`);
+    const res = await fetch(process.env.PAYLOADS_URL! + id);
     const data = await res.json();
     return {
       orbit: data.orbit || "Unknown",
@@ -60,8 +60,8 @@ export async function GET(
 ) {
   try {
     const { id } = params;
-
-    const res = await fetch(`https://api.spacexdata.com/v4/launches/${id}`);
+    console.log(process.env.ALL_LAUNCHES_URL!+id)
+    const res = await fetch(process.env.ALL_LAUNCHES_URL!+id);
     const data = await res.json();
 
     const payloadId = data.payloads?.[0];
