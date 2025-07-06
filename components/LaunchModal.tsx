@@ -21,6 +21,7 @@ const LaunchModal = ({setOpenModal , data , openModal ,modalDataLoading} : {
                   ) : (
                     <div className='bg-white w-11/12 mx-auto'>
                       <div className='flex gap-x-4 '>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={data.image} alt='iamge' width={72} height={72}/>
                         <div>
                           <div className='flex gap-x-2 items-center'>

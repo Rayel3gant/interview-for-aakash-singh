@@ -114,8 +114,8 @@ const DateModal = ({
                 )}
             </div>
 
-            <div className="flex flex-row gap-x-6">
-                <div className="flex flex-col gap-y-2">
+            <div className="flex flex-row gap-x-6 mt-4 items-start">
+                <div className="flex flex-col gap-y-2 text-[10px] md:text-sm">
                     <button className= {`${(filterOption===1) && "text-blue-400"}`} onClick={() => setFilterOption(1)}>Past Week</button>
                     <button className= {`${(filterOption===2) && "text-blue-400"}`} onClick={() => setFilterOption(2)}>Past Month</button>
                     <button className= {`${(filterOption===3) && "text-blue-400"}`} onClick={() => setFilterOption(3)}>Past 3 Months</button>
@@ -124,21 +124,21 @@ const DateModal = ({
                     <button className= {`${(filterOption===6) && "text-blue-400"}`} onClick={() => setFilterOption(6)}>Past 2 Years</button> 
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-4 mt-4">
-                <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    className="rounded-md border shadow-sm"
-                    captionLayout="dropdown"
-                />
-                <Calendar
-                    mode="single"
-                    selected={date2}
-                    onSelect={setDate2}
-                    className="rounded-md border shadow-sm"
-                    captionLayout="dropdown"
-                />
+                <div className="flex flex-col md:flex-row gap-4 ">
+                  <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={setDate}
+                      className="rounded-md border shadow-sm"
+                      captionLayout="dropdown"
+                  />
+                  <Calendar
+                      mode="single"
+                      selected={date2}
+                      onSelect={setDate2}
+                      className="rounded-md border shadow-sm"
+                      captionLayout="dropdown"
+                  />
                 </div>
             </div>
 

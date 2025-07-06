@@ -1,6 +1,7 @@
 // /app/api/getLaunch/[id]/route.ts
+import { LaunchDetails, singleLaunch } from "@/lib/types";
 import { formatLaunchDate } from "@/lib/utils";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 const getLaunchPadData = async (id: string): Promise<string> => {
   try {
@@ -54,14 +55,12 @@ const getOrbitAndTypeData = async (
   }
 };
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest) {
+  const { pathname } = request.nextUrl;
   try {
-    const { id } = params;
+    const id = pathname.split('/').pop(); 
     const res = await fetch(process.env.ALL_LAUNCHES_URL!+id);
-    const data = await res.json();
+    const data:LaunchDetails = await res.json();
 
     const payloadId = data.payloads?.[0];
 
@@ -71,10 +70,10 @@ export async function GET(
       getOrbitAndTypeData(payloadId),
     ]);
 
-    const responseData = {
+    const responseData : singleLaunch = {
       image: data.links?.patch?.small || "",
       name: data.name,
-      success: data.success,
+      success: data.success!,
       upcoming: data.upcoming,
       rocket: rocketInfo.name,
       rocketType: rocketInfo.type,
@@ -82,7 +81,7 @@ export async function GET(
       flightNumber: data.flight_number,
       manufacturer: rocketInfo.company,
       nationality: rocketInfo.country,
-      launchDate: formatLaunchDate(data.static_fire_date_utc),
+      launchDate: formatLaunchDate(data.static_fire_date_utc!),
       payloadType: payloadInfo.type,
       orbit: payloadInfo.orbit,
       launchSite: launchSite,

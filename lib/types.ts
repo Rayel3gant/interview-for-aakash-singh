@@ -91,17 +91,17 @@ export interface Launch {
 export interface singleLaunch {
   image: string;
   name: string;
-  success: boolean | null;
-  rocketType: string;
+  success: boolean;
+  upcoming: boolean;
   rocket: string;
-  details: string | null; 
+  rocketType: string;
+  details: string;
   flightNumber: number;
   manufacturer: string;
   nationality: string;
-  launchDate: string; // formatted date, e.g., "24 March 2006 at 22:30"
+  launchDate: string;
   payloadType: string;
   orbit: string;
   launchSite: string;
-  wikipedia:string;
-  upcoming: boolean | null;
+  wikipedia: string;
 }
