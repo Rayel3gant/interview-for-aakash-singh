@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -20,10 +20,6 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-import { useDispatch, useSelector } from 'react-redux';
-import type { RootState } from '@/lib/redux/store';
-import { addLaunchData } from '@/lib/redux/slices/launchDataSlice';
-
 import {
   Select,
   SelectContent,
@@ -31,71 +27,69 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Launch, singleLaunch } from '@/lib/types';
+import { Launch } from '@/lib/types';
 import LaunchModal from '@/components/LaunchModal';
 import { formatLaunchDate } from '@/lib/utils';
 import DateModal from '@/components/DateModal';
 import Loader from '@/components/Loader';
+import { useQuery } from '@tanstack/react-query';
 
 const Page = () => {
-  const dispatch = useDispatch();
-  const { allLaunches } = useSelector((state: RootState) => state.launch);
-
   const [launchData, setLaunchData] = useState<Launch[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 12;
-  const [loading,setLoading]=useState(false)
   const [launchFilter,setLaunchFilter]=useState("all");
   const [openModal,setOpenModal]=useState(false);
-  const [singleLaunch,setSingleLaunch]=useState<singleLaunch | null>(null);
   const [openDateModal,setDateModal]=useState(false);
-  const [modalDataLoading,setModalDataLoading]=useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // Fetch data if not in Redux
+ 
+
   async function fetchData() {
-    setLoading(true)
-    try {
-      const res = await fetch("/api/launchData");
-      const data = await res.json();
-      setLaunchData(data.data);
-      dispatch(addLaunchData(data.data));
-    } catch(error){
-      console.error(error)
+    const res = await fetch('/api/launchData'); // adjust to your API route
+    const data = await res.json();
+    setLaunchData(data.data);
+    if (!res.ok) {
+      throw new Error('Network response was not ok');
     }
-    setLoading(false)
+    // Return the array inside `data` so React Query has actual data to cache
+    return data.data;
   }
 
+  const { data:allLaunches, isStale, isFetching,refetch} = useQuery({
+    queryKey: ['launchData'],
+    queryFn: fetchData,
+    staleTime: 1 * 60 * 1000, // 1 minutes
+  });
+
+  const refetchHandler=()=>{
+    refetch()
+  }
+
+ 
   async function fetchLaunchDetails(id:string){
-    try {
-      const res = await fetch(`/api/getLaunch/${id}`);
-      const data = await res.json();
-      setSingleLaunch(data.data);
-      
-    } catch(error){
-      console.error(error)
+    const res = await fetch(`/api/getLaunch/${id}`); 
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error('Network response was not ok');
     }
-    setLoading(false)
+    return data.data;
   }
 
-  const openLaunchDetailsModal=(id:string)=>{
-    setModalDataLoading(true);
-    fetchLaunchDetails(id);
+  const { data:singleLaunch, isLoading:modalDataLoading  } = useQuery({
+    queryKey: ['singleLaunch', selectedId],
+    queryFn: () => fetchLaunchDetails(selectedId!),
+    enabled: !!selectedId,  // fetch only when selectedId exists
+    retry: false,
+  });
+
+
+  const openLaunchDetailsModal = async (id: string) => {
+    setSelectedId(id);
     setTimeout(() => {
       setOpenModal(true)
     }, 1000);
-    setTimeout(() => {
-      setModalDataLoading(false);
-    }, 1500);
-  }
-
-  useEffect(() => {
-    if (!allLaunches || allLaunches.length === 0) {
-      fetchData();
-    } else {
-      setLaunchData(allLaunches);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
 
 
   // Pagination logic
@@ -186,7 +180,7 @@ const Page = () => {
       <div className="overflow-x-auto w-full">
         <div className="w-full overflow-x-auto">
         {
-          loading ? (
+          isFetching ? (
             <div className='w-full min-h-[300px] flex justify-center items-center'>
                 <Loader/>
             </div>
@@ -199,6 +193,18 @@ const Page = () => {
                 </div>
               ) : (
                 <>
+                  <div className='flex gap-x-4 items-center pb-4'>
+                    <div className={` text-sm py-2 ${isStale ? "text-red-500":"text-green-500"}`}>
+                      {
+                        isStale ? "Data is Stale." : "Data is Fresh."
+                      }
+                    </div>
+
+                    <button onClick={refetchHandler} disabled={!isStale} className={`px-4 py-2 rounded-md text-white cursor-pointer ${!isStale ? 'bg-gray-400 cursor-not-allowed' : 'bg-black'}`}>
+                      Refetch Data
+                    </button>
+
+                  </div>
                   <Table className="table-fixed w-full tableBorder rounded-md min-w-[1200px]">
                     <TableHeader className="bg-[#F4F5F7] text-[#4B5563]">
                       <TableRow>
