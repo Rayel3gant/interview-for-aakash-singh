@@ -42,7 +42,7 @@ const Page = () => {
   const [openModal,setOpenModal]=useState(false);
   const [openDateModal,setDateModal]=useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-
+  const [loading,setLoading]=useState(false)
  
 
   async function fetchData() {
@@ -180,7 +180,7 @@ const Page = () => {
       <div className="overflow-x-auto w-full">
         <div className="w-full overflow-x-auto">
         {
-          isFetching ? (
+          isFetching || loading ? (
             <div className='w-full min-h-[300px] flex justify-center items-center'>
                 <Loader/>
             </div>
