@@ -33,7 +33,6 @@ const fetchAllLaunchData=async():Promise<Launch[]>=> {
         };
       })
     );
-    console.log("data",enrichedData)
     return enrichedData;
   } catch (error) {
     throw error;

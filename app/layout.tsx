@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import { StoreProvider } from "@/lib/redux/storeProvider";
 import ReactQueryProvider from "@/components/ReactQueryProvider";
 
 const geistSans = Geist({
@@ -31,11 +30,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Navbar/>
-        <StoreProvider>
           <ReactQueryProvider>
             {children}
           </ReactQueryProvider>
-        </StoreProvider>
       </body>
     </html>
   );

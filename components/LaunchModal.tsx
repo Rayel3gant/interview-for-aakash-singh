@@ -9,7 +9,6 @@ import Loader from './Loader';
 const LaunchModal = ({setOpenModal , data , openModal ,modalDataLoading} : {
     setOpenModal:(open: boolean) => void; data:singleLaunch ; openModal : boolean , modalDataLoading:boolean
 }) => {
-  console.log("data recieved",data)
   return (
     <div>
         <Dialog onOpenChange={setOpenModal} open={openModal}>

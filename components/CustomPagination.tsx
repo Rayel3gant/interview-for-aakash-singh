@@ -19,7 +19,6 @@ const CustomPagination = ({launchData ,currentPage , setCurrentPage, setCurrentR
     setCurrentRows:(launches:Launch[])=>void
     setIndexOfFirstRow:(index:number)=>void
 }) => {
-    console.log("launch data",launchData)
     
     const totalPages = Math.ceil(launchData?.length / rowsPerPage);
     useEffect(() => {
