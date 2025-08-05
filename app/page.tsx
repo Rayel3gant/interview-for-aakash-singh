@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -32,7 +32,8 @@ import LaunchModal from '@/components/LaunchModal';
 import { formatLaunchDate } from '@/lib/utils';
 import DateModal from '@/components/DateModal';
 import Loader from '@/components/Loader';
-import { useQuery } from '@tanstack/react-query';
+import { useAllLaunches } from './hooks/useAllLaunches';
+import { useLaunchDetails } from './hooks/useLaunchDetails';
 
 const Page = () => {
   const [launchData, setLaunchData] = useState<Launch[]>([]);
@@ -45,58 +46,27 @@ const Page = () => {
   const [loading,setLoading]=useState(false)
  
 
-  async function fetchData() {
-    const res = await fetch('/api/launchData'); // adjust to your API route
-    const data = await res.json();
-    setLaunchData(data.data);
-    if (!res.ok) {
-      throw new Error('Network response was not ok');
+  const { data: allLaunches, isStale, isFetching, refetch } = useAllLaunches();
+  useEffect(()=>{
+    if (allLaunches) {
+      setLaunchData(allLaunches);
     }
-    // Return the array inside `data` so React Query has actual data to cache
-    return data.data;
-  }
-
-  const { data:allLaunches, isStale, isFetching,refetch} = useQuery({
-    queryKey: ['launchData'],
-    queryFn: fetchData,
-    staleTime: 1 * 60 * 1000, // 1 minutes
-  });
-
-  const refetchHandler=()=>{
-    refetch()
-  }
-
- 
-  async function fetchLaunchDetails(id:string){
-    const res = await fetch(`/api/getLaunch/${id}`); 
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return data.data;
-  }
-
-  const { data:singleLaunch, isLoading:modalDataLoading  } = useQuery({
-    queryKey: ['singleLaunch', selectedId],
-    queryFn: () => fetchLaunchDetails(selectedId!),
-    enabled: !!selectedId,  // fetch only when selectedId exists
-    retry: false,
-  });
-
+  }),[allLaunches];
+  const { data:singleLaunch, isLoading:modalDataLoading  } = useLaunchDetails(selectedId);
 
   const openLaunchDetailsModal = async (id: string) => {
     setSelectedId(id);
     setTimeout(() => {
       setOpenModal(true)
-    }, 1000);
+    }, 250);
   };
 
 
   // Pagination logic
-  const totalPages = Math.ceil(launchData.length / rowsPerPage);
+  const totalPages = Math.ceil(launchData?.length / rowsPerPage);
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentRows = launchData.slice(indexOfFirstRow, indexOfLastRow);
+  const currentRows = launchData?.slice(indexOfFirstRow, indexOfLastRow);
 
   const goToPage = (page: number) => {
     if (page < 1 || page > totalPages) return;
@@ -187,7 +157,7 @@ const Page = () => {
           ) : (
             <>
             {
-              (launchData.length===0)? (
+              (launchData?.length===0)? (
                 <div className='w-full text-center text-[#374151] text-lg'>
                   No results found for the specified filter
                 </div>
@@ -200,7 +170,7 @@ const Page = () => {
                       }
                     </div>
 
-                    <button onClick={refetchHandler} disabled={!isStale} className={`px-4 py-2 rounded-md text-white cursor-pointer ${!isStale ? 'bg-gray-400 cursor-not-allowed' : 'bg-black'}`}>
+                    <button onClick={()=>refetch()} disabled={!isStale} className={`px-4 py-2 rounded-md text-white cursor-pointer ${!isStale ? 'bg-gray-400 cursor-not-allowed' : 'bg-black'}`}>
                       Refetch Data
                     </button>
 
