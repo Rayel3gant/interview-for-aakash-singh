@@ -9,13 +9,13 @@ import {
 } from "@/components/ui/select"
 import { Launch } from '@/lib/types';
 import LaunchModal from '@/components/LaunchModal';
-import { formatLaunchDate } from '@/lib/utils';
 import DateModal from '@/components/DateModal';
 import Loader from '@/components/Loader';
 import { useAllLaunches } from '../hooks/useAllLaunches';
 import { useLaunchDetails } from '../hooks/useLaunchDetails';
-import Pagintaion from '@/components/Pagintaion';
 import DataTable from '@/components/DataTable';
+import { launchFilterOptions } from '@/lib/constant';
+import CustomPagination from '@/components/CustomPagination';
 
 const Page = () => {
   const [launchData, setLaunchData] = useState<Launch[]>([]);
@@ -26,6 +26,7 @@ const Page = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading,setLoading]=useState(false)
   const [currentRows,setCurrentRows]=useState<Launch[]>([])
+  const [indexOfFirstRow,setIndexOfFirstRow]=useState(0)
  
   const { data: allLaunches, isStale, isFetching, refetch } = useAllLaunches();
   useEffect(() => {
@@ -44,6 +45,7 @@ const Page = () => {
   };
   
   const launchStatusFilter = (status: string) => {
+    if (!allLaunches) return;
     setLoading(true);
     setCurrentPage(1);
 
@@ -87,10 +89,12 @@ const Page = () => {
               <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent defaultValue="all" className='bg-white'>
-              <SelectItem value="all">All Launches</SelectItem>
-              <SelectItem value="upcoming">Upcoming Launches</SelectItem>
-              <SelectItem value="successful">Successful Launches</SelectItem>
-              <SelectItem value="failed">Failed Launches</SelectItem>
+              {
+                Object.entries(launchFilterOptions).map(([key, label]) => (
+                  <SelectItem key={key} value={key}>
+                    {label}
+                  </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -128,13 +132,15 @@ const Page = () => {
                   <DataTable
                     currentRows={currentRows}
                     openLaunchDetailsModal={openLaunchDetailsModal}
+                    indexOfFirstRow={indexOfFirstRow}
                   />
 
-                  <Pagintaion 
+                  <CustomPagination
                     launchData={launchData} 
                     currentPage={currentPage} 
                     setCurrentPage={setCurrentPage} 
                     setCurrentRows={setCurrentRows}
+                    setIndexOfFirstRow={setIndexOfFirstRow}
                   />                
                 </>
               )
@@ -142,7 +148,7 @@ const Page = () => {
             </>
           )
         }
-      </div>       
+        </div>       
       </div>
 
       {

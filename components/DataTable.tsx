@@ -10,10 +10,11 @@ import {
 import { Launch } from '@/lib/types';
 import { formatLaunchDate } from '@/lib/utils';
 
-const DataTable = ({currentRows , openLaunchDetailsModal}:
+const DataTable = ({currentRows , openLaunchDetailsModal , indexOfFirstRow}:
   {
     currentRows:Launch[],
-    openLaunchDetailsModal:(id:string)=>void
+    openLaunchDetailsModal:(id:string)=>void,
+    indexOfFirstRow: number
   }) => {
   return (
     <div>
@@ -37,7 +38,7 @@ const DataTable = ({currentRows , openLaunchDetailsModal}:
               key={launch.id}
               className="cursor-pointer hover:bg-gray-50"
             >
-              <TableCell className='text-center border-0'>{ index + 1}</TableCell>
+              <TableCell className='text-center border-0'>{indexOfFirstRow + index + 1}</TableCell>
               <TableCell className='text-center border-0'>{formatLaunchDate(launch.static_fire_date_utc!)}</TableCell>
               <TableCell className='text-center border-0'>{launch.location}</TableCell>
               <TableCell className='text-center border-0'>{launch.name}</TableCell>

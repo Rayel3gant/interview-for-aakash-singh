@@ -12,11 +12,12 @@ import {
 import { Launch } from '@/lib/types';
 const rowsPerPage = 12;
 
-const Pagintaion = ({launchData ,currentPage , setCurrentPage, setCurrentRows}:{
+const CustomPagination = ({launchData ,currentPage , setCurrentPage, setCurrentRows , setIndexOfFirstRow}:{
     launchData:Launch[],
     currentPage:number,
     setCurrentPage:(page: number) => void,
     setCurrentRows:(launches:Launch[])=>void
+    setIndexOfFirstRow:(index:number)=>void
 }) => {
     console.log("launch data",launchData)
     
@@ -24,6 +25,7 @@ const Pagintaion = ({launchData ,currentPage , setCurrentPage, setCurrentRows}:{
     useEffect(() => {
         const indexOfLastRow = currentPage * rowsPerPage;
         const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+        setIndexOfFirstRow(indexOfFirstRow)
         const currentRows = launchData?.slice(indexOfFirstRow, indexOfLastRow);
         setCurrentRows(currentRows);
     }, [launchData, currentPage, setCurrentRows]);
@@ -92,4 +94,4 @@ const Pagintaion = ({launchData ,currentPage , setCurrentPage, setCurrentRows}:{
   )
 }
 
-export default Pagintaion
+export default CustomPagination
