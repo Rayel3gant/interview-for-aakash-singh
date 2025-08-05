@@ -10,15 +10,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 
 import {
   Select,
@@ -32,26 +23,28 @@ import LaunchModal from '@/components/LaunchModal';
 import { formatLaunchDate } from '@/lib/utils';
 import DateModal from '@/components/DateModal';
 import Loader from '@/components/Loader';
-import { useAllLaunches } from './hooks/useAllLaunches';
-import { useLaunchDetails } from './hooks/useLaunchDetails';
+import { useAllLaunches } from '../hooks/useAllLaunches';
+import { useLaunchDetails } from '../hooks/useLaunchDetails';
+import Pagintaion from '@/components/Pagintaion';
 
 const Page = () => {
   const [launchData, setLaunchData] = useState<Launch[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 12;
   const [launchFilter,setLaunchFilter]=useState("all");
   const [openModal,setOpenModal]=useState(false);
   const [openDateModal,setDateModal]=useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading,setLoading]=useState(false)
+  const [currentRows,setCurrentRows]=useState<Launch[]>([])
  
 
   const { data: allLaunches, isStale, isFetching, refetch } = useAllLaunches();
-  useEffect(()=>{
+  useEffect(() => {
     if (allLaunches) {
       setLaunchData(allLaunches);
     }
-  }),[allLaunches];
+  }, [allLaunches]);
+
   const { data:singleLaunch, isLoading:modalDataLoading  } = useLaunchDetails(selectedId);
 
   const openLaunchDetailsModal = async (id: string) => {
@@ -60,42 +53,7 @@ const Page = () => {
       setOpenModal(true)
     }, 250);
   };
-
-
-  // Pagination logic
-  const totalPages = Math.ceil(launchData?.length / rowsPerPage);
-  const indexOfLastRow = currentPage * rowsPerPage;
-  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentRows = launchData?.slice(indexOfFirstRow, indexOfLastRow);
-
-  const goToPage = (page: number) => {
-    if (page < 1 || page > totalPages) return;
-    setCurrentPage(page);
-  };
-
-  // Smart Pagination Logic
-  const getPageNumbers = () => {
-    const pages = [];
-    const start = Math.max(currentPage - 1, 2);
-    const end = Math.min(currentPage + 1, totalPages - 1);
-
-    pages.push(1); // Always show first
-
-    if (start > 2) pages.push('ellipsis-start');
-
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-
-    if (end < totalPages - 1) pages.push('ellipsis-end');
-
-    if (totalPages > 1) pages.push(totalPages); // Always show last
-
-    return pages;
-  };
-
-  const pageNumbers = getPageNumbers();
-
+  
   const launchStatusFilter = (status: string) => {
     setLoading(true);
     setCurrentPage(1); // Reset pagination on filter change
@@ -117,7 +75,9 @@ const Page = () => {
     }
 
     setLaunchData(filtered);
-    setLoading(false);
+    setTimeout(()=>{
+      setLoading(false);
+    },300)
   };
 
   return (
@@ -195,7 +155,7 @@ const Page = () => {
                           key={launch.id}
                           className="cursor-pointer hover:bg-gray-50"
                         >
-                          <TableCell className='text-center border-0'>{indexOfFirstRow + index + 1}</TableCell>
+                          <TableCell className='text-center border-0'>{ index + 1}</TableCell>
                           <TableCell className='text-center border-0'>{formatLaunchDate(launch.static_fire_date_utc!)}</TableCell>
                           <TableCell className='text-center border-0'>{launch.location}</TableCell>
                           <TableCell className='text-center border-0'>{launch.name}</TableCell>
@@ -223,42 +183,14 @@ const Page = () => {
                     </TableBody>
                   </Table>
 
-                  {/* Pagination */}
-                  {totalPages > 1 && (
-                    <Pagination className="my-8 w-full flex justify-end ">
-                      <PaginationContent>
-                        <PaginationItem>
-                          <PaginationPrevious
-                            href="#"
-                            onClick={() => goToPage(currentPage - 1)}
-                          />
-                        </PaginationItem>
-
-                        {pageNumbers.map((item, idx) => (
-                          <PaginationItem key={idx}>
-                            {item === 'ellipsis-start' || item === 'ellipsis-end' ? (
-                              <PaginationEllipsis />
-                            ) : (
-                              <PaginationLink
-                                href="#"
-                                isActive={item === currentPage}
-                                onClick={() => goToPage(Number(item))}
-                              >
-                                {item}
-                              </PaginationLink>
-                            )}
-                          </PaginationItem>
-                        ))}
-
-                        <PaginationItem>
-                          <PaginationNext
-                            href="#"
-                            onClick={() => goToPage(currentPage + 1)}
-                          />
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
-                  )}
+                  <Pagintaion 
+                    launchData={launchData} 
+                    currentPage={currentPage} 
+                    setCurrentPage={setCurrentPage} 
+                    setCurrentRows={setCurrentRows}
+                  />
+                    
+                  
                 </>
               )
             }
