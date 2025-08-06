@@ -10,7 +10,7 @@ import {
 import { Launch } from "@/lib/types";
 import { formatLaunchDate } from "@/lib/utils";
 
-const DataTable = ({
+export const DataTable = ({
   currentRows,
   openLaunchDetailsModal,
   indexOfFirstRow,
@@ -89,5 +89,3 @@ const DataTable = ({
     </div>
   );
 };
-
-export default DataTable;

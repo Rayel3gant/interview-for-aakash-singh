@@ -8,14 +8,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Launch } from "@/lib/types";
-import LaunchModal from "@/components/LaunchModal";
-import DateModal from "@/components/DateModal";
-import Loader from "@/components/Loader";
+import { LaunchModal } from "@/components/LaunchModal";
+import { DateModal } from "@/components/DateModal";
+import { Loader } from "@/components/Loader";
 import { useAllLaunches } from "../hooks/useAllLaunches";
 import { useLaunchDetails } from "../hooks/useLaunchDetails";
-import DataTable from "@/components/DataTable";
+import { DataTable } from "@/components/DataTable";
 import { launchFilterOptions } from "@/lib/constant";
-import CustomPagination from "@/components/CustomPagination";
+import { CustomPagination } from "@/components/CustomPagination";
 
 const Page = () => {
   const [launchData, setLaunchData] = useState<Launch[]>([]);

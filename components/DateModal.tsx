@@ -7,7 +7,7 @@ import { addDays } from "date-fns";
 import { useQueryClient } from "@tanstack/react-query";
 import { daysMap, filterLabels, filterOptions } from "@/lib/constant";
 
-const DateModal = ({
+export const DateModal = ({
   setOpenModal,
   openModal,
   setFilteredData,
@@ -114,4 +114,3 @@ const DateModal = ({
     </Dialog>
   );
 };
-export default DateModal;

@@ -1,9 +1,9 @@
 import React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { singleLaunch } from "@/lib/types";
-import Loader from "./Loader";
+import { Loader } from "./Loader";
 
-const LaunchModal = ({
+export const LaunchModal = ({
   setOpenModal,
   data,
   openModal,
@@ -117,5 +117,3 @@ const LaunchModal = ({
     </div>
   );
 };
-
-export default LaunchModal;

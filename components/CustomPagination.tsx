@@ -12,7 +12,7 @@ import {
 import { Launch } from "@/lib/types";
 const rowsPerPage = 12;
 
-const CustomPagination = ({
+export const CustomPagination = ({
   launchData,
   currentPage,
   setCurrentPage,
@@ -98,4 +98,3 @@ const CustomPagination = ({
   );
 };
 
-export default CustomPagination;
