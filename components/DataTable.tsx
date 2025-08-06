@@ -1,14 +1,8 @@
 import React from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Launch } from "@/lib/types";
 import { formatLaunchDate } from "@/lib/utils";
+import CustomTableHeader from "./table/CustomTableHeader";
 
 export const DataTable = ({
   currentRows,
@@ -22,24 +16,7 @@ export const DataTable = ({
   return (
     <div>
       <Table className="table-fixed w-full tableBorder rounded-md min-w-[1200px]">
-        <TableHeader className="bg-[#F4F5F7] text-[#4B5563]">
-          <TableRow>
-            <TableHead className="w-[60px] text-center">No.</TableHead>
-            <TableHead className="min-w-[300px] max-w-fit text-center">
-              Launched (UTC)
-            </TableHead>
-            <TableHead className="min-w-[250px] max-w-fit text-center">
-              Location
-            </TableHead>
-            <TableHead className="min-w-[150px] text-center">Mission</TableHead>
-            <TableHead className="min-w-[120px] text-center">Orbit</TableHead>
-            <TableHead className="min-w-[160px] text-center">
-              Launch Status
-            </TableHead>
-            <TableHead className="min-w-[120px] text-center">Rocket</TableHead>
-          </TableRow>
-        </TableHeader>
-
+        <CustomTableHeader />
         <TableBody className="text-[#1F2937] border-b-0">
           {currentRows.map((launch: Launch, index: number) => (
             <TableRow

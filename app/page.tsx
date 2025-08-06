@@ -1,12 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Launch } from "@/lib/types";
 import { LaunchModal } from "@/components/LaunchModal";
 import { DateModal } from "@/components/DateModal";
@@ -14,8 +8,8 @@ import { Loader } from "@/components/Loader";
 import { useAllLaunches } from "../hooks/useAllLaunches";
 import { useLaunchDetails } from "../hooks/useLaunchDetails";
 import { DataTable } from "@/components/DataTable";
-import { launchFilterOptions } from "@/lib/constant";
 import { CustomPagination } from "@/components/CustomPagination";
+import { FilterButtons } from "@/components/home/FilterButtons";
 
 const Page = () => {
   const [launchData, setLaunchData] = useState<Launch[]>([]);
@@ -49,9 +43,7 @@ const Page = () => {
     if (!allLaunches) return;
     setLoading(true);
     setCurrentPage(1);
-
     let filtered: Launch[] = [];
-
     if (status === "all") {
       filtered = allLaunches;
     } else if (status === "upcoming") {
@@ -68,7 +60,6 @@ const Page = () => {
           launch.success === false && launch.upcoming === false
       );
     }
-
     setLaunchData(filtered);
     setTimeout(() => {
       setLoading(false);
@@ -77,35 +68,12 @@ const Page = () => {
 
   return (
     <div className="w-11/12 mx-auto min-h-[calc(100vh-8rem)] ">
-      <div className="w-full flex items-center justify-between my-12">
-        <div
-          className="cursor-pointer px-4 py-2 rounded-md border"
-          onClick={() => setDateModal(true)}
-        >
-          Date filter
-        </div>
-
-        <div>
-          <Select
-            value={launchFilter}
-            onValueChange={(value) => {
-              setLaunchFilter(value);
-              launchStatusFilter(value);
-            }}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Theme" />
-            </SelectTrigger>
-            <SelectContent defaultValue="all" className="bg-white">
-              {Object.entries(launchFilterOptions).map(([key, label]) => (
-                <SelectItem key={key} value={key}>
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+      <FilterButtons
+        setDateModal={setDateModal}
+        launchFilter={launchFilter}
+        setLaunchFilter={setLaunchFilter}
+        launchStatusFilter={launchStatusFilter}
+      />
 
       <div className="overflow-x-auto w-full">
         <div className="w-full overflow-x-auto">

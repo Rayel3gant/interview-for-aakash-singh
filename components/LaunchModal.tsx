@@ -2,6 +2,7 @@ import React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { singleLaunch } from "@/lib/types";
 import { Loader } from "./Loader";
+import { LaunchModalText } from "./LaunchModalText";
 
 export const LaunchModal = ({
   setOpenModal,
@@ -65,50 +66,22 @@ export const LaunchModal = ({
               </div>
 
               <div className="flex flex-col gap-y-3 mt-4">
-                <div className="w-full flex items-center justify-between text-[10px]  md:text-[14px] text-[#4B5563] border-b-[0.25px] border-b-[#1F2937] pb-2">
-                  <div className="font-semibold">Flight Number</div>
-                  <div>{data.flightNumber}</div>
-                </div>
-
-                <div className="w-full flex items-center justify-between text-[10px]  md:text-[14px] text-[#4B5563] border-b-[0.25px] border-b-[#1F2937] pb-2">
-                  <div className="font-semibold">Mission Name</div>
-                  <div>{data.name}</div>
-                </div>
-
-                <div className="w-full flex items-center justify-between text-[10px]  md:text-[14px] text-[#4B5563] border-b-[0.25px] border-b-[#1F2937] pb-2">
-                  <div className="font-semibold">Rocket Type</div>
-                  <div>{data.rocketType}</div>
-                </div>
-                <div className="w-full flex items-center justify-between text-[10px]  md:text-[14px] text-[#4B5563] border-b-[0.25px] border-b-[#1F2937] pb-2">
-                  <div className="font-semibold">Rocket Name</div>
-                  <div>{data.rocket}</div>
-                </div>
-
-                <div className="w-full flex items-center justify-between text-[10px]  md:text-[14px] text-[#4B5563] border-b-[0.25px] border-b-[#1F2937] pb-2">
-                  <div className="font-semibold">Manufacturer</div>
-                  <div>{data.manufacturer}</div>
-                </div>
-
-                <div className="w-full flex items-center justify-between text-[10px]  md:text-[14px] text-[#4B5563] border-b-[0.25px] border-b-[#1F2937] pb-2">
-                  <div className="font-semibold">Nationality</div>
-                  <div>{data.nationality}</div>
-                </div>
-                <div className="w-full flex items-center justify-between text-[10px]  md:text-[14px] text-[#4B5563] border-b-[0.25px] border-b-[#1F2937] pb-2">
-                  <div className="font-semibold">Launch Date</div>
-                  <div>{data.launchDate}</div>
-                </div>
-                <div className="w-full flex items-center justify-between text-[10px]  md:text-[14px] text-[#4B5563] border-b-[0.25px] border-b-[#1F2937] pb-2">
-                  <div className="font-semibold">Payload Type</div>
-                  <div>{data.payloadType}</div>
-                </div>
-                <div className="w-full flex items-center justify-between text-[10px]  md:text-[14px] text-[#4B5563] border-b-[0.25px] border-b-[#1F2937] pb-2">
-                  <div className="font-semibold">Orbit</div>
-                  <div>{data.orbit}</div>
-                </div>
-                <div className="w-full flex items-center justify-between text-[10px]  md:text-[14px] text-[#4B5563]">
-                  <div className="font-semibold">Launch Site</div>
-                  <div>{data.launchSite}</div>
-                </div>
+                <LaunchModalText
+                  label="Flight Number"
+                  text={data.flightNumber}
+                />
+                <LaunchModalText label="Mission Name" text={data.name} />
+                <LaunchModalText label="Rocket Type" text={data.rocketType} />
+                <LaunchModalText label="Rocket Name" text={data.rocket} />
+                <LaunchModalText
+                  label="Manufacturer"
+                  text={data.manufacturer}
+                />
+                <LaunchModalText label="Nationality" text={data.nationality} />
+                <LaunchModalText label="Launch Date" text={data.launchDate} />
+                <LaunchModalText label="Payload Type" text={data.payloadType} />
+                <LaunchModalText label="Orbit" text={data.orbit} />
+                <LaunchModalText label="Launch Site" text={data.launchSite} />
               </div>
             </div>
           )}

@@ -11,20 +11,20 @@ import {
 } from "@/components/ui/pagination";
 import { Launch } from "@/lib/types";
 const rowsPerPage = 12;
-
+interface CustomPaginationProps {
+  launchData: Launch[];
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+  setCurrentRows: (launches: Launch[]) => void;
+  setIndexOfFirstRow: (index: number) => void;
+}
 export const CustomPagination = ({
   launchData,
   currentPage,
   setCurrentPage,
   setCurrentRows,
   setIndexOfFirstRow,
-}: {
-  launchData: Launch[];
-  currentPage: number;
-  setCurrentPage: (page: number) => void;
-  setCurrentRows: (launches: Launch[]) => void;
-  setIndexOfFirstRow: (index: number) => void;
-}) => {
+}: CustomPaginationProps) => {
   const totalPages = Math.ceil(launchData?.length / rowsPerPage);
   useEffect(() => {
     const indexOfLastRow = currentPage * rowsPerPage;
@@ -38,23 +38,17 @@ export const CustomPagination = ({
     setCurrentPage(page);
   };
 
-  const getPageNumbers = () => {
-    const pages = [];
+  const getPageNumbers = (): (number | string)[] => {
+    const pages: (number | string)[] = [1];
+    if (totalPages === 1) return pages;
     const start = Math.max(currentPage - 1, 2);
     const end = Math.min(currentPage + 1, totalPages - 1);
-
-    pages.push(1);
-
     if (start > 2) pages.push("ellipsis-start");
-
     for (let i = start; i <= end; i++) {
       pages.push(i);
     }
-
     if (end < totalPages - 1) pages.push("ellipsis-end");
-
     if (totalPages > 1) pages.push(totalPages);
-
     return pages;
   };
 
@@ -97,4 +91,3 @@ export const CustomPagination = ({
     </div>
   );
 };
-
