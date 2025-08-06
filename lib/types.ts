@@ -86,8 +86,6 @@ export interface Launch {
   orbit: string;
 }
 
-
-
 export interface singleLaunch {
   image: string;
   name: string;
